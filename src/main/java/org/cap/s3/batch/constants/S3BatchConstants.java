@@ -22,6 +22,7 @@ public class S3BatchConstants {
 	//	Sql queries
 	public static final String QUERY_GET_IMAGE_AU_ID = "SELECT addtnl_data_t FROM lpt_addtnl_d_value WHERE addtnl_data_u = ? AND addtnl_data_fld_c='AUID'";
 	public static final String QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPE_DIRCV = "SELECT a.addtnl_data_t FROM lpt_addtnl_d_value a INNER JOIN lpt_addtnl_d_value b ON b.addtnl_data_u = a.addtnl_data_u WHERE a.addtnl_data_u = ? AND a.addtnl_data_fld_c = 'ABE' AND b.addtnl_data_fld_c = 'ABERELTYPE' AND b.addtnl_data_t= 'I' ORDER BY a.last_update_dt DESC LIMIT 1";
+	public static final String QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPE_CXINSPPKT = "SELECT a.addtnl_data_t FROM lpt_addtnl_d_value a WHERE a.addtnl_data_u = ? AND a.addtnl_data_fld_c='COMPNBR' ORDER BY a.addtnl_data_u DESC LIMIT 1";
 	
 	
 

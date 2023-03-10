@@ -56,6 +56,7 @@ public class S3BatchService {
 			getAdditionalDataForDocTypeDIRCV(additionalData, (Integer)jobParameters.get(S3BatchConstants.ADDITIONAL_DATA_ID));
 			break;
 		case S3BatchConstants.DOC_TYPE_CXINSPPKT:
+			getAdditionalDataForDocTypeCXINSPPKT(additionalData, (Integer)jobParameters.get(S3BatchConstants.ADDITIONAL_DATA_ID));
 			break;
 		case S3BatchConstants.DOC_TYPE_INSTLIST:
 		case S3BatchConstants.DOC_TYPE_POCTST:
@@ -63,6 +64,14 @@ public class S3BatchService {
 		default:
 		}
 		return additionalData;
+	}
+
+	private void getAdditionalDataForDocTypeCXINSPPKT(AdditionalData additionalData, long additionalDataId) throws S3BatchException {
+		try {
+			s3BatchRepository.getAdditionalDataForDocTypeCXINSPPKT(additionalData, additionalDataId);
+		}catch (Exception e) {
+			throw new S3BatchException("Error in S3BatchService::getAdditionalDataForDocTypeCXINSPPKT() method. Details: ".concat(e.toString()));
+		}
 	}
 
 	private void getAdditionalDataForDocTypeDIRCV(AdditionalData additionalData, long additionalDataId) throws S3BatchException {
