@@ -4,10 +4,12 @@ import java.util.Map;
 
 import org.cap.s3.batch.constants.S3BatchConstants;
 import org.cap.s3.batch.exception.S3BatchException;
+import org.cap.s3.batch.model.AdditionalData;
 import org.cap.s3.batch.repository.S3BatchRepository;
 import org.cap.s3.batch.utils.S3BatchUtils;
 import org.cap.s3.batch.utils.SsmParameters;
 import org.cap.s3.batch.utils.Validator;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,11 +35,24 @@ public class S3BatchService {
 //			jobParameters.forEach((key,value)->logger.info("JobParameter key-{}, value-{}",key,value));
 			final int auId = getImageAuId((Integer)jobParameters.get(S3BatchConstants.ADDITIONAL_DATA_ID));
 			logger.info("AuId fetched from db: {}",auId);
+			final AdditionalData additionalData = getRequiredAdditionalData(auId);
+			JSONObject json = new JSONObject(additionalData);
+			logger.info("Additional data: {}",json);
 		}catch(Exception e) {
 			logger.error("Error occured in S3BatchService::processJob() method. Details: {}",e.toString());
 			throw new S3BatchException("Error occured in S3BatchService::processJob() method. Details: ".concat(e.toString()));
 		}
 		
+	}
+
+	private AdditionalData getRequiredAdditionalData(final int auId) {
+		AdditionalData additionalData = new AdditionalData(auId);
+		switch((String)jobParameters.get(S3BatchConstants.DOCUMENT_TYPE)) {
+		case S3BatchConstants.DOC_TYPE_DIRCV:
+//			getAdditionalData
+		default:
+		}
+		return null;
 	}
 
 	private int getImageAuId(int additionalDataId) throws S3BatchException {
