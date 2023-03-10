@@ -8,12 +8,13 @@ import java.sql.SQLException;
 
 import org.cap.s3.batch.constants.S3BatchConstants;
 import org.cap.s3.batch.exception.S3BatchException;
+import org.cap.s3.batch.model.AdditionalData;
 import org.cap.s3.batch.utils.SsmParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class S3BatchRepository implements AutoCloseable {
-	
+
 	private Logger logger = LoggerFactory.getLogger(S3BatchRepository.class);
 
 	private Connection informixConnection;
@@ -48,8 +49,8 @@ public class S3BatchRepository implements AutoCloseable {
 			this.postgresConnection = DriverManager.getConnection(ssmParameters.getPostgresUrl(),
 					ssmParameters.getPostgresUsername(), ssmParameters.getPostgresPassword());
 		} catch (Exception e) {
-			logger.error("Exception in createPostgresDbConnection: {}",e.toString());
-//			TODO: comment
+			logger.error("Exception in createPostgresDbConnection: {}", e.toString());
+			// TODO: comment
 			throw new S3BatchException("Error occured creating connection to Postgres Server".concat(e.toString()));
 		}
 	}
@@ -77,20 +78,33 @@ public class S3BatchRepository implements AutoCloseable {
 		removeConnections();
 	}
 
-	public int getImageAuId(int additionalDataId) throws Exception {
+	public long getImageAuId(long additionalDataId) throws Exception {
 		ResultSet rs = null;
-		int auId = -1;
-		try(PreparedStatement st = getInformixConnection().prepareStatement(S3BatchConstants.QUERY_GET_IMAGE_AU_ID)){
-			st.setInt(1, additionalDataId);
+		long auId = -1;
+		try (PreparedStatement st = getInformixConnection().prepareStatement(S3BatchConstants.QUERY_GET_IMAGE_AU_ID)) {
+			st.setLong(1, additionalDataId);
 			rs = st.executeQuery();
-			if(rs!=null && rs.next()) {
+			if (rs != null && rs.next()) {
 				auId = rs.getInt(1);
 			}
-		}
-		finally {
-			if(rs!=null)
+		} finally {
+			if (rs != null)
 				rs.close();
 		}
 		return auId;
+	}
+
+	public void getAdditionalDataForDocTypeDIRCV(AdditionalData additionalData, long additionalDataId) throws Exception {
+		ResultSet rs = null;
+		try (PreparedStatement st = getInformixConnection().prepareStatement(S3BatchConstants.QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPE_DIRCV)) {
+			st.setLong(1, additionalDataId);
+			rs = st.executeQuery();
+			if (rs != null && rs.next()) {
+				additionalData.setPersonid(rs.getLong(1));
+			}
+		} finally {
+			if (rs != null)
+				rs.close();
+		}
 	}
 }

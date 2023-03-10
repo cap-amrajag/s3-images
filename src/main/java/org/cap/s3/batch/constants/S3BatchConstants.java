@@ -13,10 +13,16 @@ public class S3BatchConstants {
 	public static final String ADDITIONAL_DATA_ID = "additionalDataU";
 	public static final String REQUEST_ID = "requestId";
 	
-	//	Sql queries
-	public static final String QUERY_GET_IMAGE_AU_ID = "SELECT addtnl_data_t FROM lpt_addtnl_d_value WHERE addtnl_data_u = ? AND addtnl_data_fld_c='AUID'";
-	
 	//	Document types
 	public static final String DOC_TYPE_DIRCV = "DIRCV";
+	public static final String DOC_TYPE_CXINSPPKT = "CXINSPPKT";
+	public static final String DOC_TYPE_INSTLIST = "INSTLIST";
+	public static final String DOC_TYPE_POCTST = "POCTST";
+	
+	//	Sql queries
+	public static final String QUERY_GET_IMAGE_AU_ID = "SELECT addtnl_data_t FROM lpt_addtnl_d_value WHERE addtnl_data_u = ? AND addtnl_data_fld_c='AUID'";
+	public static final String QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPE_DIRCV = "SELECT a.addtnl_data_t FROM lpt_addtnl_d_value a INNER JOIN lpt_addtnl_d_value b ON b.addtnl_data_u = a.addtnl_data_u WHERE a.addtnl_data_u = ? AND a.addtnl_data_fld_c = 'ABE' AND b.addtnl_data_fld_c = 'ABERELTYPE' AND b.addtnl_data_t= 'I' ORDER BY a.last_update_dt DESC LIMIT 1";
+	
+	
 
 }

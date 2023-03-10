@@ -1,5 +1,6 @@
 package org.cap.s3.batch.service;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.cap.s3.batch.constants.S3BatchConstants;
@@ -25,7 +26,7 @@ public class S3BatchService {
 
 	public S3BatchService(Map<String, Object> jobParameters) throws Exception {
 		this.ssmParameters = S3BatchUtils.getSsmParameters();
-		this.jobParameters = jobParameters;
+		this.jobParameters = Collections.unmodifiableMap(jobParameters);
 		validateJobParameters();
 		s3BatchRepository = new S3BatchRepository(ssmParameters);		
 	}
@@ -33,11 +34,14 @@ public class S3BatchService {
 	public void processJob() throws S3BatchException {
 		try {
 //			jobParameters.forEach((key,value)->logger.info("JobParameter key-{}, value-{}",key,value));
-			final int auId = getImageAuId((Integer)jobParameters.get(S3BatchConstants.ADDITIONAL_DATA_ID));
+			
+			final long auId = getImageAuId((Integer)jobParameters.get(S3BatchConstants.ADDITIONAL_DATA_ID));
 			logger.info("AuId fetched from db: {}",auId);
+			
 			final AdditionalData additionalData = getRequiredAdditionalData(auId);
 			JSONObject json = new JSONObject(additionalData);
 			logger.info("Additional data: {}",json);
+			
 		}catch(Exception e) {
 			logger.error("Error occured in S3BatchService::processJob() method. Details: {}",e.toString());
 			throw new S3BatchException("Error occured in S3BatchService::processJob() method. Details: ".concat(e.toString()));
@@ -45,18 +49,32 @@ public class S3BatchService {
 		
 	}
 
-	private AdditionalData getRequiredAdditionalData(final int auId) {
+	private AdditionalData getRequiredAdditionalData(final long auId) throws S3BatchException {
 		AdditionalData additionalData = new AdditionalData(auId);
 		switch((String)jobParameters.get(S3BatchConstants.DOCUMENT_TYPE)) {
 		case S3BatchConstants.DOC_TYPE_DIRCV:
-//			getAdditionalData
+			getAdditionalDataForDocTypeDIRCV(additionalData, (Integer)jobParameters.get(S3BatchConstants.ADDITIONAL_DATA_ID));
+			break;
+		case S3BatchConstants.DOC_TYPE_CXINSPPKT:
+			break;
+		case S3BatchConstants.DOC_TYPE_INSTLIST:
+		case S3BatchConstants.DOC_TYPE_POCTST:
+			break;
 		default:
 		}
-		return null;
+		return additionalData;
 	}
 
-	private int getImageAuId(int additionalDataId) throws S3BatchException {
-		int auId = -1;
+	private void getAdditionalDataForDocTypeDIRCV(AdditionalData additionalData, long additionalDataId) throws S3BatchException {
+		try {
+			s3BatchRepository.getAdditionalDataForDocTypeDIRCV(additionalData, additionalDataId);
+		}catch (Exception e) {
+			throw new S3BatchException("Error in S3BatchService::getAdditionalDataForDocTypeDIRCV() method. Details: ".concat(e.toString()));
+		}
+	}
+
+	private long getImageAuId(long additionalDataId) throws S3BatchException {
+		long auId = -1;
 		try {
 			auId = s3BatchRepository.getImageAuId(additionalDataId);
 			if(auId<=0)

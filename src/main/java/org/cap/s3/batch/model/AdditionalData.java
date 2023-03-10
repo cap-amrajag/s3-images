@@ -2,46 +2,38 @@ package org.cap.s3.batch.model;
 
 public class AdditionalData {
 
-	private int auId;
-	private int suId;
-	private int compnbr;
-	private int personid;
-	private String docType;
+	private long auId;
+	private long suId;
+	private long compnbr;
+	private long personid;	//ABE_Id
 	
-	public AdditionalData(int auId) {
+	public AdditionalData(long auId) {
 		this.auId = auId;
 	}
 	
-	public int getAuId() {
+	public long getAuId() {
 		return auId;
 	}
-	public void setAuId(int auId) {
+	public void setAuId(long auId) {
 		this.auId = auId;
 	}
-	public int getSuId() {
+	public long getSuId() {
 		return suId;
 	}
-	public void setSuId(int suId) {
+	public void setSuId(long suId) {
 		this.suId = suId;
 	}
-	public int getCompnbr() {
+	public long getCompnbr() {
 		return compnbr;
 	}
-	public void setCompnbr(int compnbr) {
+	public void setCompnbr(long compnbr) {
 		this.compnbr = compnbr;
 	}
-	public int getPersonid() {
+	public long getPersonid() {
 		return personid;
 	}
-	public void setPersonid(int personid) {
+	public void setPersonid(long personid) {
 		this.personid = personid;
-	}
-	public String getDocType() {
-		return docType;
-	}
-	public void setDocType(String docType) {
-		this.docType = docType;
-	}
-	
+	}	
 	
 }
