@@ -60,10 +60,19 @@ public class S3BatchService {
 			break;
 		case S3BatchConstants.DOC_TYPE_INSTLIST:
 		case S3BatchConstants.DOC_TYPE_POCTST:
+			getAdditionalDataForDocTypesINSTLISTOrPOCTST(additionalData, (Integer)jobParameters.get(S3BatchConstants.ADDITIONAL_DATA_ID));
 			break;
 		default:
 		}
 		return additionalData;
+	}
+
+	private void getAdditionalDataForDocTypesINSTLISTOrPOCTST(AdditionalData additionalData, long additionalDataId) throws S3BatchException {
+		try {
+			s3BatchRepository.getAdditionalDataForDocTypesINSTLISTOrPOCTST(additionalData, additionalDataId);
+		}catch (Exception e) {
+			throw new S3BatchException("Error in S3BatchService::getAdditionalDataForDocTypesINSTLISTOrPOCTST() method. Details: ".concat(e.toString()));
+		}
 	}
 
 	private void getAdditionalDataForDocTypeCXINSPPKT(AdditionalData additionalData, long additionalDataId) throws S3BatchException {

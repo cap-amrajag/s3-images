@@ -121,4 +121,18 @@ public class S3BatchRepository implements AutoCloseable {
 				rs.close();
 		}
 	}
+
+	public void getAdditionalDataForDocTypesINSTLISTOrPOCTST(AdditionalData additionalData, long additionalDataId) throws Exception {
+		ResultSet rs = null;
+		try (PreparedStatement st = getInformixConnection().prepareStatement(S3BatchConstants.QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPES_INSTLIST_OR_POCTST)) {
+			st.setLong(1, additionalDataId);
+			rs = st.executeQuery();
+			if (rs != null && rs.next()) {
+				additionalData.setSuId(additionalDataId);
+			}
+		} finally {
+			if (rs != null)
+				rs.close();
+		}
+	}
 }

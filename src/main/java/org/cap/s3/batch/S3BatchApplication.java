@@ -27,8 +27,11 @@ public class S3BatchApplication {
 		String docType;
 		int additionalDataId;
 		int requestId = 1234;
-		additionalDataId = 36768902; docType = "DIRCV";
+//		additionalDataId = 36768902; docType = "DIRCV";
 //		additionalDataId = 36765816; docType = "CXINSPPKT";
+//		additionalDataId = 36769648; docType = "INSTLIST";
+		additionalDataId = 36769648; docType = "POCTST";
+		docType = "FLOORPLAN";
 		Map<String,Object> jobParameters = new HashMap<>();
 		jobParameters.put(S3BatchConstants.TASK_ID, taskId);
 		jobParameters.put(S3BatchConstants.ITEM_SEQUENCE_NUMBER, itemSeqNo);
