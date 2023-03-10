@@ -1,5 +1,7 @@
 package org.cap.s3.batch;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,20 +20,28 @@ public class S3BatchApplication {
 	}
 
 	private static void startS3Batch() {
-		Map<String,String> jobParameters = new HashMap<>();
-		jobParameters.put(S3BatchConstants.TASK_ID, null);
-		jobParameters.put(S3BatchConstants.ITEM_SEQUENCE_NUMBER, null);
-		jobParameters.put(S3BatchConstants.IMAGE_CODE, null);
-		jobParameters.put(S3BatchConstants.IMAGE_CREATED_DATE_TIME, null);
-		jobParameters.put(S3BatchConstants.DOCUMENT_TYPE, null);
-		jobParameters.put(S3BatchConstants.ADDITIONAL_DATA_ID, null);
-		jobParameters.put(S3BatchConstants.REQUEST_ID, null);
+		int taskId = 123;
+		int itemSeqNo = 2;
+		String imageCode = "abc";
+		Timestamp timestamp = Timestamp.from(Instant.now());
+		String docType = "DIRCV";
+		int additionalDataId = 36768902;
+		int requestId = 1234;
+		Map<String,Object> jobParameters = new HashMap<>();
+		jobParameters.put(S3BatchConstants.TASK_ID, taskId);
+		jobParameters.put(S3BatchConstants.ITEM_SEQUENCE_NUMBER, itemSeqNo);
+		jobParameters.put(S3BatchConstants.IMAGE_CODE, imageCode);
+		jobParameters.put(S3BatchConstants.IMAGE_CREATED_DATE_TIME, timestamp);
+		jobParameters.put(S3BatchConstants.DOCUMENT_TYPE, docType);
+		jobParameters.put(S3BatchConstants.ADDITIONAL_DATA_ID, additionalDataId);
+		jobParameters.put(S3BatchConstants.REQUEST_ID, requestId);
 		
 		try {
 			S3BatchService s3Batch = new S3BatchService(jobParameters);
 			s3Batch.processJob();
 		}catch(Exception e) {
 			logger.error("Fatal error occured in S3BatchApplication. Details: {}",e.toString());
+			System.exit(0);
 		}
 	}
 

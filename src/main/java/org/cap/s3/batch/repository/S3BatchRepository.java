@@ -2,8 +2,11 @@ package org.cap.s3.batch.repository;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.cap.s3.batch.constants.S3BatchConstants;
 import org.cap.s3.batch.exception.S3BatchException;
 import org.cap.s3.batch.utils.SsmParameters;
 import org.slf4j.Logger;
@@ -72,5 +75,22 @@ public class S3BatchRepository implements AutoCloseable {
 	public void close() throws Exception {
 		// Release Database Connections
 		removeConnections();
+	}
+
+	public int getImageAuId(int additionalDataId) throws Exception {
+		ResultSet rs = null;
+		int auId = -1;
+		try(PreparedStatement st = getInformixConnection().prepareStatement(S3BatchConstants.QUERY_GET_IMAGE_AU_ID)){
+			st.setInt(1, additionalDataId);
+			rs = st.executeQuery();
+			if(rs!=null && rs.next()) {
+				auId = rs.getInt(1);
+			}
+		}
+		finally {
+			if(rs!=null)
+				rs.close();
+		}
+		return auId;
 	}
 }
