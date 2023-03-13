@@ -1,4 +1,4 @@
-package org.cap.s3.batch.exception;
+package org.cap.packet.generation.exception;
 
 public class S3BatchException extends Exception {
 	

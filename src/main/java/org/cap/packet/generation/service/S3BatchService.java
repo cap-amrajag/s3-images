@@ -1,15 +1,15 @@
-package org.cap.s3.batch.service;
+package org.cap.packet.generation.service;
 
 import java.util.Collections;
 import java.util.Map;
 
-import org.cap.s3.batch.constants.S3BatchConstants;
-import org.cap.s3.batch.exception.S3BatchException;
-import org.cap.s3.batch.model.AdditionalData;
-import org.cap.s3.batch.repository.S3BatchRepository;
-import org.cap.s3.batch.utils.S3BatchUtils;
-import org.cap.s3.batch.utils.SsmParameters;
-import org.cap.s3.batch.utils.Validator;
+import org.cap.packet.generation.constants.S3BatchConstants;
+import org.cap.packet.generation.exception.S3BatchException;
+import org.cap.packet.generation.model.AdditionalData;
+import org.cap.packet.generation.repository.S3BatchRepository;
+import org.cap.packet.generation.utils.S3BatchUtils;
+import org.cap.packet.generation.utils.SsmParameters;
+import org.cap.packet.generation.utils.Validator;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

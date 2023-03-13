@@ -1,12 +1,12 @@
-package org.cap.s3.batch;
+package org.cap.packet.generation;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.cap.s3.batch.constants.S3BatchConstants;
-import org.cap.s3.batch.service.S3BatchService;
+import org.cap.packet.generation.constants.S3BatchConstants;
+import org.cap.packet.generation.service.S3BatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

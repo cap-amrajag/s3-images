@@ -1,4 +1,4 @@
-package org.cap.s3.batch.model;
+package org.cap.packet.generation.model;
 
 public class AdditionalData {
 

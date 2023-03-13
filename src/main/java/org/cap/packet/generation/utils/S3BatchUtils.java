@@ -1,4 +1,4 @@
-package org.cap.s3.batch.utils;
+package org.cap.packet.generation.utils;
 
 import java.util.Properties;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package org.cap.s3.batch.utils;
+package org.cap.packet.generation.utils;
 
 public enum CustomLoggingEvents {
 	BATCH_STARTED, BATCH_FINISHED,
