@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cap</groupId>
-	<artifactId>s3-images-batch</artifactId>
+	<artifactId>packet-generation-batch</artifactId>
 	<version>0.0.1</version>
-	<name>s3-images</name>
-	<description>aws s3 images batch</description>
+	<name>packet-generation-batch</name>
+	<description>cap packet generation batch</description>
 	<packaging>jar</packaging>
 	<properties>
 		<jacoco.version>0.8.5</jacoco.version>
