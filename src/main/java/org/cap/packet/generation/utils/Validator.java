@@ -1,8 +1,8 @@
-package org.cap.s3.batch.utils;
+package org.cap.packet.generation.utils;
 
 import java.util.Map;
 
-import org.cap.s3.batch.constants.S3BatchConstants;
+import org.cap.packet.generation.constants.S3BatchConstants;
 
 public class Validator {
 	

@@ -1,4 +1,4 @@
-package org.cap.s3.batch.repository;
+package org.cap.packet.generation.repository;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -6,10 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.cap.s3.batch.constants.S3BatchConstants;
-import org.cap.s3.batch.exception.S3BatchException;
-import org.cap.s3.batch.model.AdditionalData;
-import org.cap.s3.batch.utils.SsmParameters;
+import org.cap.packet.generation.constants.S3BatchConstants;
+import org.cap.packet.generation.exception.S3BatchException;
+import org.cap.packet.generation.model.AdditionalData;
+import org.cap.packet.generation.utils.SsmParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,7 +1,7 @@
-package org.cap.s3.batch.utils;
+package org.cap.packet.generation.utils;
 
-import org.cap.s3.batch.constants.SSMParameterConstants;
-import org.cap.s3.batch.exception.S3BatchException;
+import org.cap.packet.generation.constants.SSMParameterConstants;
+import org.cap.packet.generation.exception.S3BatchException;
 
 public class SsmParameters {
 	
