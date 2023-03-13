@@ -100,7 +100,7 @@ public class S3BatchRepository implements AutoCloseable {
 			st.setLong(1, additionalDataId);
 			rs = st.executeQuery();
 			if (rs != null && rs.next()) {
-				additionalData.setPersonid(rs.getLong(1));
+				additionalData.setPersonid(String.valueOf(rs.getLong(1)));
 			}
 		} finally {
 			if (rs != null)
@@ -114,7 +114,7 @@ public class S3BatchRepository implements AutoCloseable {
 			st.setLong(1, additionalDataId);
 			rs = st.executeQuery();
 			if (rs != null && rs.next()) {
-				additionalData.setCompnbr(additionalDataId);
+				additionalData.setCompnbr(String.valueOf(additionalDataId));
 			}
 		} finally {
 			if (rs != null)
@@ -128,7 +128,7 @@ public class S3BatchRepository implements AutoCloseable {
 			st.setLong(1, additionalDataId);
 			rs = st.executeQuery();
 			if (rs != null && rs.next()) {
-				additionalData.setSuId(additionalDataId);
+				additionalData.setSuId(String.valueOf(additionalDataId));
 			}
 		} finally {
 			if (rs != null)

@@ -50,7 +50,7 @@ public class S3BatchService {
 	}
 
 	private AdditionalData getRequiredAdditionalData(final long auId) throws S3BatchException {
-		AdditionalData additionalData = new AdditionalData(auId);
+		AdditionalData additionalData = new AdditionalData(String.valueOf(auId));
 		switch((String)jobParameters.get(S3BatchConstants.DOCUMENT_TYPE)) {
 		case S3BatchConstants.DOC_TYPE_DIRCV:
 			getAdditionalDataForDocTypeDIRCV(additionalData, (Integer)jobParameters.get(S3BatchConstants.ADDITIONAL_DATA_ID));

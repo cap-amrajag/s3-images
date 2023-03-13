@@ -2,37 +2,37 @@ package org.cap.packet.generation.model;
 
 public class AdditionalData {
 
-	private long auId;
-	private long suId;
-	private long compnbr;
-	private long personid;	//ABE_Id
+	private String auId;
+	private String suId;
+	private String compnbr;
+	private String personid;	//ABE_Id
 	
-	public AdditionalData(long auId) {
+	public AdditionalData(String auId) {
 		this.auId = auId;
 	}
 	
-	public long getAuId() {
+	public String getAuId() {
 		return auId;
 	}
-	public void setAuId(long auId) {
+	public void setAuId(String auId) {
 		this.auId = auId;
 	}
-	public long getSuId() {
+	public String getSuId() {
 		return suId;
 	}
-	public void setSuId(long suId) {
+	public void setSuId(String suId) {
 		this.suId = suId;
 	}
-	public long getCompnbr() {
+	public String getCompnbr() {
 		return compnbr;
 	}
-	public void setCompnbr(long compnbr) {
+	public void setCompnbr(String compnbr) {
 		this.compnbr = compnbr;
 	}
-	public long getPersonid() {
+	public String getPersonid() {
 		return personid;
 	}
-	public void setPersonid(long personid) {
+	public void setPersonid(String personid) {
 		this.personid = personid;
 	}	
 	
