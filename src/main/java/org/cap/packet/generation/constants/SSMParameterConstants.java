@@ -1,4 +1,4 @@
-package org.cap.s3.batch.constants;
+package org.cap.packet.generation.constants;
 
 public class SSMParameterConstants {
 	
