@@ -55,8 +55,8 @@ public class S3BatchService {
 			logger.info("Additional data: {}",json);
 			
 			final String applicationName ;	//	applicationName = getApplicationName(additionalData);
-			applicationName = "LAPDocsIdx1";
-//			applicationName = "LAPPTESIdx1";
+//			applicationName = "LAPDocsIdx1";
+			applicationName = "LAPPTESIdx1";
 //			applicationName = "LAPCompsIdx1";
 //			applicationName = "ScoresTRFIdx1";
 			
@@ -96,20 +96,82 @@ public class S3BatchService {
 		case S3BatchConstants.DOC_TYPE_DIRCV:
 			subQuery = SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build();
 			queryFields = new ArrayList<>();
+			
 			//	Person-Id
-			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_PERSON_ID, applicationContext), additionalData.getPersonid());
+			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_PERSON_ID, applicationContext), Collections.singletonList(additionalData.getPersonid()));
 			queryFields.add(queryField);
-			//	TODO: doctype
+			
+			//	Doc Type
+			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_DOC_TYPE, applicationContext), additionalData.getDocType());
+			queryFields.add(queryField);
+			
+			//Final Query Fields list
 			subQuery.setQueryFields(queryFields);
 			additionalJson = new JSONObject(subQuery);
 			subQueries.put(additionalJson);
 			break;
 		case S3BatchConstants.DOC_TYPE_CXINSPPKT:
+			subQuery = SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build();
+			queryFields = new ArrayList<>();
+			
+			//	Comp-number
+			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_COMPNBR, applicationContext), Collections.singletonList(additionalData.getCompnbr()));
+			queryFields.add(queryField);
+			
+			//	Doc Type
+			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_DOC_TYPE, applicationContext), additionalData.getDocType());
+			queryFields.add(queryField);
+			
+			//Final Query Fields list
+			subQuery.setQueryFields(queryFields);
+			additionalJson = new JSONObject(subQuery);
+			subQueries.put(additionalJson);
 			break;
 		case S3BatchConstants.DOC_TYPE_INSTLIST:
 		case S3BatchConstants.DOC_TYPE_POCTST:
+			subQuery = SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build();
+			queryFields = new ArrayList<>();
+			
+			//	Su-Id
+			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_SUID, applicationContext), Collections.singletonList(additionalData.getSuId()));
+			queryFields.add(queryField);
+			
+			//	Doc Type
+			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_DOC_TYPE, applicationContext), additionalData.getDocType());
+			queryFields.add(queryField);
+			
+			//Final Query Fields list
+			subQuery.setQueryFields(queryFields);
+			additionalJson = new JSONObject(subQuery);
+			subQueries.put(additionalJson);
 			break;
 		default:
+			subQuery = SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build();
+			additionalJson = new JSONObject(subQuery);
+			JSONArray defaultFieldsArray = additionalJson.getJSONArray(S3BatchConstants.QUERY_FIELDS);
+			
+			//	Person-Id
+			JSONObject defaultFields = new JSONObject();
+			defaultFields.put(S3BatchConstants.FIELD_NAME, String.format(S3BatchConstants.QUERY_FIELD_PERSON_ID, applicationContext));
+			defaultFields.put(S3BatchConstants.FIELD_VALUE, "");
+			defaultFieldsArray.put(defaultFields);
+			
+			//	Su-Id
+			defaultFields = new JSONObject();
+			defaultFields.put(S3BatchConstants.FIELD_NAME, String.format(S3BatchConstants.QUERY_FIELD_SUID, applicationContext));
+			defaultFields.put(S3BatchConstants.FIELD_VALUE, "");
+			defaultFieldsArray.put(defaultFields);
+			
+			//	Doc Type
+			defaultFields = new JSONObject();
+			defaultFields.put(S3BatchConstants.FIELD_NAME, String.format(S3BatchConstants.QUERY_FIELD_DOC_TYPE, applicationContext));
+			defaultFields.put(S3BatchConstants.FIELD_VALUE, additionalData.getDocType());
+			defaultFieldsArray.put(defaultFields);
+			
+			//Final Default Query Fields list
+			
+			subQueries.put(additionalJson);
+			break;
 		}
 		return jsonBody.toString();
 	}

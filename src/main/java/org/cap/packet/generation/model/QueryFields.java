@@ -1,14 +1,14 @@
 package org.cap.packet.generation.model;
 
 public class QueryFields {
-	private String field_name;
-	private String field_value;
+	private String field_name ;
+	private Object field_value ;
 	
-	public QueryFields(String fieldName, String fieldValue) {
+	public QueryFields(String fieldName, Object fieldValue) {
 		this.field_name = fieldName;
 		this.field_value = fieldValue;
 	}
-
+	
 	public String getField_name() {
 		return field_name;
 	}
@@ -17,11 +17,11 @@ public class QueryFields {
 		this.field_name = field_name;
 	}
 
-	public String getField_value() {
+	public Object getField_value() {
 		return field_value;
 	}
 
-	public void setField_value(String field_value) {
+	public void setField_value(Object field_value) {
 		this.field_value = field_value;
 	}
 	

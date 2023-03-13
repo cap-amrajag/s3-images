@@ -42,17 +42,25 @@ public class S3BatchConstants {
 	public static final String AND = "AND";
 	public static final String OR = "OR";
 	public static final String SUB_QUERIES = "subQueries";
+	public static final String QUERY_FIELDS = "queryFields";
+	public static final String FIELD_NAME = "field_name";
+	public static final String FIELD_VALUE = "field_value";
 	
 	//	Query Fields
 	public static final String QUERY_FIELD_AUID = "%s.auid";
 	public static final String QUERY_FIELD_PERSON_ID = "%s.personid";
-	
+	public static final String QUERY_FIELD_DOC_TYPE = "%s.doctype";
+	public static final String QUERY_FIELD_COMPNBR = "%s.compnbr";
+	public static final String QUERY_FIELD_SUID = "%s.suid";
 	
 	//	Sql queries
 	public static final String QUERY_GET_IMAGE_AU_ID = "SELECT addtnl_data_t FROM lpt_addtnl_d_value WHERE addtnl_data_u = ? AND addtnl_data_fld_c='AUID'";
 	public static final String QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPE_DIRCV = "SELECT a.addtnl_data_t FROM lpt_addtnl_d_value a INNER JOIN lpt_addtnl_d_value b ON b.addtnl_data_u = a.addtnl_data_u WHERE a.addtnl_data_u = ? AND a.addtnl_data_fld_c = 'ABE' AND b.addtnl_data_fld_c = 'ABERELTYPE' AND b.addtnl_data_t= 'I' ORDER BY a.last_update_dt DESC LIMIT 1";
 	public static final String QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPE_CXINSPPKT = "SELECT a.addtnl_data_t FROM lpt_addtnl_d_value a WHERE a.addtnl_data_u = ? AND a.addtnl_data_fld_c='COMPNBR' ORDER BY a.addtnl_data_u DESC LIMIT 1";
 	public static final String QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPES_INSTLIST_OR_POCTST = "SELECT a.addtnl_data_t FROM lpt_addtnl_d_value a WHERE a.addtnl_data_u = ? AND a.addtnl_data_fld_c='SUABE' ORDER BY a.addtnl_data_u DESC LIMIT 1";
+	
+	
+	
 	
 	
 	
