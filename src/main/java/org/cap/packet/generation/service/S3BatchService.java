@@ -1,15 +1,22 @@
 package org.cap.packet.generation.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.cap.packet.generation.constants.S3BatchConstants;
+import org.cap.packet.generation.constants.S3BatchConstants.QueryType;
 import org.cap.packet.generation.exception.S3BatchException;
 import org.cap.packet.generation.model.AdditionalData;
+import org.cap.packet.generation.model.QueryFields;
+import org.cap.packet.generation.model.SearchQuery;
+import org.cap.packet.generation.model.SearchQueryBuilder;
 import org.cap.packet.generation.repository.S3BatchRepository;
 import org.cap.packet.generation.utils.S3BatchUtils;
 import org.cap.packet.generation.utils.SsmParameters;
 import org.cap.packet.generation.utils.Validator;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,14 +40,35 @@ public class S3BatchService {
 
 	public void processJob() throws S3BatchException {
 		try {
-//			jobParameters.forEach((key,value)->logger.info("JobParameter key-{}, value-{}",key,value));
+			final long additionalDataId = (Integer)jobParameters.get(S3BatchConstants.ADDITIONAL_DATA_ID);
+			final String docType = (String)jobParameters.get(S3BatchConstants.DOCUMENT_TYPE);
+			final String connectionUrl;
+			//TODO: create SSM parameter for connection Url
+//			connectionUrl = (String)jobParameters.get(SSMParameterConstants.CCS_CONNECTION_URL);
+			connectionUrl = "https://u71il86if9.execute-api.us-east-1.amazonaws.com/uat/files/search";
 			
-			final long auId = getImageAuId((Integer)jobParameters.get(S3BatchConstants.ADDITIONAL_DATA_ID));
+			final long auId = getImageAuId(additionalDataId);
 			logger.info("AuId fetched from db: {}",auId);
 			
-			final AdditionalData additionalData = getRequiredAdditionalData(auId);
+			final AdditionalData additionalData = getRequiredAdditionalData(additionalDataId, docType, auId);
 			JSONObject json = new JSONObject(additionalData);
 			logger.info("Additional data: {}",json);
+			
+			final String applicationName ;	//	applicationName = getApplicationName(additionalData);
+			applicationName = "LAPDocsIdx1";
+//			applicationName = "LAPPTESIdx1";
+//			applicationName = "LAPCompsIdx1";
+//			applicationName = "ScoresTRFIdx1";
+			
+			final String applicationContext = getApplicationContextFromApplicationName(applicationName);
+			logger.info("Application Context: {}",applicationContext);
+			
+			final String ccsSearchUrl = getCCSSearchUrl(connectionUrl.trim(), applicationContext);
+			logger.info("CCS Search Url: {}",ccsSearchUrl);
+			
+			final String searchRequestBody = prepareRequestBodyForSearch(additionalData, applicationContext);
+			logger.info("Search Request Body: \n{}",new JSONObject(searchRequestBody).toString(1));
+			
 			
 		}catch(Exception e) {
 			logger.error("Error occured in S3BatchService::processJob() method. Details: {}",e.toString());
@@ -49,18 +77,83 @@ public class S3BatchService {
 		
 	}
 
-	private AdditionalData getRequiredAdditionalData(final long auId) throws S3BatchException {
-		AdditionalData additionalData = new AdditionalData(String.valueOf(auId));
-		switch((String)jobParameters.get(S3BatchConstants.DOCUMENT_TYPE)) {
+	private String prepareRequestBodyForSearch(AdditionalData additionalData, String applicationContext) {
+		SearchQuery compoundQuery = SearchQueryBuilder.ofQueryType(QueryType.COMPOUND).build();
+		JSONObject jsonBody = new JSONObject(compoundQuery);
+		
+		JSONArray subQueries = jsonBody.getJSONArray(S3BatchConstants.SUB_QUERIES);
+		
+		SearchQuery subQuery = SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build();
+		//	Au-Id
+		QueryFields queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_AUID, applicationContext), additionalData.getAuId());
+		List<QueryFields> queryFields = Collections.singletonList(queryField);
+		subQuery.setQueryFields(queryFields);
+		JSONObject auIdJson = new JSONObject(subQuery);
+		subQueries.put(auIdJson);
+		JSONObject additionalJson = null;
+		
+		switch(additionalData.getDocType()) {
 		case S3BatchConstants.DOC_TYPE_DIRCV:
-			getAdditionalDataForDocTypeDIRCV(additionalData, (Integer)jobParameters.get(S3BatchConstants.ADDITIONAL_DATA_ID));
+			subQuery = SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build();
+			queryFields = new ArrayList<>();
+			//	Person-Id
+			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_PERSON_ID, applicationContext), additionalData.getPersonid());
+			queryFields.add(queryField);
+			//	TODO: doctype
+			subQuery.setQueryFields(queryFields);
+			additionalJson = new JSONObject(subQuery);
+			subQueries.put(additionalJson);
 			break;
 		case S3BatchConstants.DOC_TYPE_CXINSPPKT:
-			getAdditionalDataForDocTypeCXINSPPKT(additionalData, (Integer)jobParameters.get(S3BatchConstants.ADDITIONAL_DATA_ID));
 			break;
 		case S3BatchConstants.DOC_TYPE_INSTLIST:
 		case S3BatchConstants.DOC_TYPE_POCTST:
-			getAdditionalDataForDocTypesINSTLISTOrPOCTST(additionalData, (Integer)jobParameters.get(S3BatchConstants.ADDITIONAL_DATA_ID));
+			break;
+		default:
+		}
+		return jsonBody.toString();
+	}
+
+	private String getCCSSearchUrl(String connectionUrl ,String applicationContext) {
+		String limit = S3BatchConstants.SEARCH_LIMIT;
+		String sortByScanDate = String.format(S3BatchConstants.SORT_BY_SCAN_DATE, applicationContext);
+		connectionUrl = connectionUrl.concat("?limit").concat(limit);
+		connectionUrl = connectionUrl.concat("&sort").concat(sortByScanDate);
+		return connectionUrl;
+	}
+
+	private String getApplicationContextFromApplicationName(String applicationName) throws S3BatchException {
+		switch(applicationName) {
+		case S3BatchConstants.APPLICATION_NAME_GENERAL:
+			return S3BatchConstants.APPLICATION_CONTEXT_GENERAL;
+		case S3BatchConstants.APPLICATION_NAME_PTCN:
+			return S3BatchConstants.APPLICATION_CONTEXT_PTCN;
+		case S3BatchConstants.APPLICATION_NAME_COMPLAINTS:
+			return S3BatchConstants.APPLICATION_CONTEXT_COMPLAINTS;
+		case S3BatchConstants.APPLICATION_NAME_RESULTS_FORMS:
+			return S3BatchConstants.APPLICATION_CONTEXT_RESULTS_FORMS;
+		default:
+			throw new S3BatchException("No applicationContext mapping found for given applicationName: ".concat(applicationName));
+		}
+	}
+
+	private String getApplicationName(AdditionalData additionalData) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private AdditionalData getRequiredAdditionalData(final long additionalDataId, final String docType, final long auId) throws S3BatchException {
+		AdditionalData additionalData = new AdditionalData(String.valueOf(auId), docType);
+		switch(docType) {
+		case S3BatchConstants.DOC_TYPE_DIRCV:
+			getAdditionalDataForDocTypeDIRCV(additionalData, additionalDataId);
+			break;
+		case S3BatchConstants.DOC_TYPE_CXINSPPKT:
+			getAdditionalDataForDocTypeCXINSPPKT(additionalData, additionalDataId);
+			break;
+		case S3BatchConstants.DOC_TYPE_INSTLIST:
+		case S3BatchConstants.DOC_TYPE_POCTST:
+			getAdditionalDataForDocTypesINSTLISTOrPOCTST(additionalData, additionalDataId);
 			break;
 		default:
 		}

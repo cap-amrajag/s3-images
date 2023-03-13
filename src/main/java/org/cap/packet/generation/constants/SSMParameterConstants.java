@@ -17,4 +17,6 @@ public class SSMParameterConstants {
 	public static final String WEB_SERVICE_URL = "WEB_SERVICE_URL";
 	public static final String POLLING_INTERVAL = "POLLING_INTERVAL";
 	public static final String JOB_ITERATIONS = "JOB_ITERATIONS";
+	
+	public static final String CCS_CONNECTION_URL = "ccsConnectionUrl";
 }

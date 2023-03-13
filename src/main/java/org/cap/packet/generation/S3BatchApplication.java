@@ -25,11 +25,11 @@ public class S3BatchApplication {
 		String imageCode = "abc";
 		Timestamp timestamp = Timestamp.from(Instant.now());
 		String docType;
-		int additionalDataId;
+		int additionalDataId = 36768902;
 		int requestId = 1234;
-//		additionalDataId = 36768902; docType = "DIRCV";
+		additionalDataId = 36768902; docType = "DIRCV";
 //		additionalDataId = 36765816; docType = "CXINSPPKT";
-		additionalDataId = 36769648; docType = "INSTLIST";
+//		additionalDataId = 36769648; docType = "INSTLIST";
 //		additionalDataId = 36769648; docType = "POCTST";
 //		docType = "FLOORPLAN";
 		Map<String,Object> jobParameters = new HashMap<>();
