@@ -78,61 +78,77 @@ public class S3BatchRepository implements AutoCloseable {
 		removeConnections();
 	}
 
-	public long getImageAuId(long additionalDataId) throws Exception {
-		ResultSet rs = null;
-		long auId = -1;
-		try (PreparedStatement st = getInformixConnection().prepareStatement(S3BatchConstants.QUERY_GET_IMAGE_AU_ID)) {
-			st.setLong(1, additionalDataId);
-			rs = st.executeQuery();
-			if (rs != null && rs.next()) {
-				auId = rs.getInt(1);
+	public long getImageAuId(long additionalDataId) throws S3BatchException {
+		try {
+			ResultSet rs = null;
+			long auId = -1;
+			try (PreparedStatement st = getInformixConnection().prepareStatement(S3BatchConstants.QUERY_GET_IMAGE_AU_ID)) {
+				st.setLong(1, additionalDataId);
+				rs = st.executeQuery();
+				if (rs != null && rs.next()) {
+					auId = rs.getInt(1);
+				}
+			} finally {
+				if (rs != null)
+					rs.close();
 			}
-		} finally {
-			if (rs != null)
-				rs.close();
-		}
-		return auId;
-	}
-
-	public void getAdditionalDataForDocTypeDIRCV(AdditionalData additionalData, long additionalDataId) throws Exception {
-		ResultSet rs = null;
-		try (PreparedStatement st = getInformixConnection().prepareStatement(S3BatchConstants.QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPE_DIRCV)) {
-			st.setLong(1, additionalDataId);
-			rs = st.executeQuery();
-			if (rs != null && rs.next()) {
-				additionalData.setPersonid(String.valueOf(rs.getLong(1)));
-			}
-		} finally {
-			if (rs != null)
-				rs.close();
+			return auId;
+		}catch(Exception e) {
+			throw new S3BatchException(e.toString());
 		}
 	}
 
-	public void getAdditionalDataForDocTypeCXINSPPKT(AdditionalData additionalData, long additionalDataId) throws Exception {
-		ResultSet rs = null;
-		try (PreparedStatement st = getInformixConnection().prepareStatement(S3BatchConstants.QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPE_CXINSPPKT)) {
-			st.setLong(1, additionalDataId);
-			rs = st.executeQuery();
-			if (rs != null && rs.next()) {
-				additionalData.setCompnbr(String.valueOf(additionalDataId));
+	public void getAdditionalDataForDocTypeDIRCV(AdditionalData additionalData, long additionalDataId) throws S3BatchException {
+		try {
+			ResultSet rs = null;
+			try (PreparedStatement st = getInformixConnection().prepareStatement(S3BatchConstants.QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPE_DIRCV)) {
+				st.setLong(1, additionalDataId);
+				rs = st.executeQuery();
+				if (rs != null && rs.next()) {
+					additionalData.setPersonid(String.valueOf(rs.getLong(1)));
+				}
+			} finally {
+				if (rs != null)
+					rs.close();
 			}
-		} finally {
-			if (rs != null)
-				rs.close();
+		}catch(Exception e) {
+			throw new S3BatchException(e.toString());
 		}
 	}
 
-	public void getAdditionalDataForDocTypesINSTLISTOrPOCTST(AdditionalData additionalData, long additionalDataId) throws Exception {
-		ResultSet rs = null;
-		try (PreparedStatement st = getInformixConnection().prepareStatement(S3BatchConstants.QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPES_INSTLIST_OR_POCTST)) {
-			st.setLong(1, additionalDataId);
-			rs = st.executeQuery();
-			if (rs != null && rs.next()) {
-				additionalData.setSuId(String.valueOf(additionalDataId));
+	public void getAdditionalDataForDocTypeCXINSPPKT(AdditionalData additionalData, long additionalDataId) throws S3BatchException {
+		try {
+			ResultSet rs = null;
+			try (PreparedStatement st = getInformixConnection().prepareStatement(S3BatchConstants.QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPE_CXINSPPKT)) {
+				st.setLong(1, additionalDataId);
+				rs = st.executeQuery();
+				if (rs != null && rs.next()) {
+					additionalData.setCompnbr(String.valueOf(additionalDataId));
+				}
+			} finally {
+				if (rs != null)
+					rs.close();
 			}
-		} finally {
-			if (rs != null)
-				rs.close();
+		}catch(Exception e) {
+			throw new S3BatchException(e.toString());
+		}
+	}
+
+	public void getAdditionalDataForDocTypesINSTLISTOrPOCTST(AdditionalData additionalData, long additionalDataId) throws S3BatchException {
+		try {
+			ResultSet rs = null;
+			try (PreparedStatement st = getInformixConnection().prepareStatement(S3BatchConstants.QUERY_GET_ADDITIONAL_DATA_FOR_DOC_TYPES_INSTLIST_OR_POCTST)) {
+				st.setLong(1, additionalDataId);
+				rs = st.executeQuery();
+				if (rs != null && rs.next()) {
+					additionalData.setSuId(String.valueOf(additionalDataId));
+				}
+			} finally {
+				if (rs != null)
+					rs.close();
+			}
+		}catch(Exception e) {
+			throw new S3BatchException(e.toString());
 		}
 	}
 }
