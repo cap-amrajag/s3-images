@@ -55,8 +55,8 @@ public class S3BatchService {
 			logger.info("Additional data: {}",json);
 			
 			final String applicationName ;	//	applicationName = getApplicationName(additionalData);
-//			applicationName = "LAPDocsIdx1";
-			applicationName = "LAPPTESIdx1";
+			applicationName = "LAPDocsIdx1";
+//			applicationName = "LAPPTESIdx1";
 //			applicationName = "LAPCompsIdx1";
 //			applicationName = "ScoresTRFIdx1";
 			
@@ -66,8 +66,8 @@ public class S3BatchService {
 			final String ccsSearchUrl = getCCSSearchUrl(connectionUrl.trim(), applicationContext);
 			logger.info("CCS Search Url: {}",ccsSearchUrl);
 			
-			final String searchRequestBody = prepareRequestBodyForSearch(additionalData, applicationContext);
-			logger.info("Search Request Body: \n{}",new JSONObject(searchRequestBody).toString(1));
+			final JSONObject searchRequestJsonBody = prepareRequestJsonBodyForSearch(additionalData, applicationContext);
+			logger.info("Search Request Body: \n{}",searchRequestJsonBody.toString(1));
 			
 			
 		}catch(Exception e) {
@@ -77,103 +77,113 @@ public class S3BatchService {
 		
 	}
 
-	private String prepareRequestBodyForSearch(AdditionalData additionalData, String applicationContext) {
+	private JSONObject prepareRequestJsonBodyForSearch(AdditionalData additionalData, String applicationContext) {
 		SearchQuery compoundQuery = SearchQueryBuilder.ofQueryType(QueryType.COMPOUND).build();
-		JSONObject jsonBody = new JSONObject(compoundQuery);
+		JSONObject requestJsonBody = new JSONObject(compoundQuery);		
+		JSONArray subQueries = requestJsonBody.getJSONArray(S3BatchConstants.SUB_QUERIES);		
+		JSONObject subQuery =  null;
+		JSONArray queryFieldsArray = null;
+		JSONObject queryField = null;
 		
-		JSONArray subQueries = jsonBody.getJSONArray(S3BatchConstants.SUB_QUERIES);
-		
-		SearchQuery subQuery = SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build();
-		//	Au-Id
-		QueryFields queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_AUID, applicationContext), additionalData.getAuId());
-		List<QueryFields> queryFields = Collections.singletonList(queryField);
-		subQuery.setQueryFields(queryFields);
-		JSONObject auIdJson = new JSONObject(subQuery);
-		subQueries.put(auIdJson);
-		JSONObject additionalJson = null;
+		//	Common sub query Au-Id
+		subQuery = new JSONObject(SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build());
+		queryFieldsArray = subQuery.getJSONArray(S3BatchConstants.QUERY_FIELDS);
+		queryField = new JSONObject();
+		queryField.put(S3BatchConstants.FIELD_NAME,String.format(S3BatchConstants.QUERY_FIELD_AUID, applicationContext));
+		queryField.put(S3BatchConstants.FIELD_VALUE, additionalData.getAuId());
+		queryFieldsArray.put(queryField);
+		subQueries.put(subQuery);
 		
 		switch(additionalData.getDocType()) {
 		case S3BatchConstants.DOC_TYPE_DIRCV:
-			subQuery = SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build();
-			queryFields = new ArrayList<>();
+			//	Sub query for DOC_TYPE_DIRCV
+			subQuery =  new JSONObject(SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build());
+			queryFieldsArray = subQuery.getJSONArray(S3BatchConstants.QUERY_FIELDS);
 			
 			//	Person-Id
-			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_PERSON_ID, applicationContext), Collections.singletonList(additionalData.getPersonid()));
-			queryFields.add(queryField);
-			
+			queryField = new JSONObject();
+			queryField.put(S3BatchConstants.FIELD_NAME,String.format(S3BatchConstants.QUERY_FIELD_PERSON_ID, applicationContext));
+			queryField.put(S3BatchConstants.FIELD_VALUE, Collections.singletonList(additionalData.getPersonid()));
+			queryFieldsArray.put(queryField);
+						
 			//	Doc Type
-			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_DOC_TYPE, applicationContext), additionalData.getDocType());
-			queryFields.add(queryField);
+			queryField = new JSONObject();
+			queryField.put(S3BatchConstants.FIELD_NAME,String.format(S3BatchConstants.QUERY_FIELD_DOC_TYPE, applicationContext));
+			queryField.put(S3BatchConstants.FIELD_VALUE, additionalData.getDocType());
+			queryFieldsArray.put(queryField);
 			
-			//Final Query Fields list
-			subQuery.setQueryFields(queryFields);
-			additionalJson = new JSONObject(subQuery);
-			subQueries.put(additionalJson);
+			//	Append Sub query
+			subQueries.put(subQuery);
 			break;
 		case S3BatchConstants.DOC_TYPE_CXINSPPKT:
-			subQuery = SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build();
-			queryFields = new ArrayList<>();
+			//	Sub query for .DOC_TYPE_CXINSPPKT
+			subQuery =  new JSONObject(SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build());
+			queryFieldsArray = subQuery.getJSONArray(S3BatchConstants.QUERY_FIELDS);
 			
 			//	Comp-number
-			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_COMPNBR, applicationContext), Collections.singletonList(additionalData.getCompnbr()));
-			queryFields.add(queryField);
+			queryField = new JSONObject();
+			queryField.put(S3BatchConstants.FIELD_NAME,String.format(S3BatchConstants.QUERY_FIELD_COMPNBR, applicationContext));
+			queryField.put(S3BatchConstants.FIELD_VALUE, Collections.singletonList(additionalData.getCompnbr()));
+			queryFieldsArray.put(queryField);
 			
 			//	Doc Type
-			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_DOC_TYPE, applicationContext), additionalData.getDocType());
-			queryFields.add(queryField);
+			queryField = new JSONObject();
+			queryField.put(S3BatchConstants.FIELD_NAME,String.format(S3BatchConstants.QUERY_FIELD_DOC_TYPE, applicationContext));
+			queryField.put(S3BatchConstants.FIELD_VALUE, additionalData.getDocType());
+			queryFieldsArray.put(queryField);
 			
-			//Final Query Fields list
-			subQuery.setQueryFields(queryFields);
-			additionalJson = new JSONObject(subQuery);
-			subQueries.put(additionalJson);
+			//	Append Sub query
+			subQueries.put(subQuery);
 			break;
 		case S3BatchConstants.DOC_TYPE_INSTLIST:
 		case S3BatchConstants.DOC_TYPE_POCTST:
-			subQuery = SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build();
-			queryFields = new ArrayList<>();
+			//	Sub query for .DOC_TYPE_POCTST & DOC_TYPE_INSTLIST
+			subQuery =  new JSONObject(SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build());
+			queryFieldsArray = subQuery.getJSONArray(S3BatchConstants.QUERY_FIELDS);
 			
 			//	Su-Id
-			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_SUID, applicationContext), Collections.singletonList(additionalData.getSuId()));
-			queryFields.add(queryField);
+			queryField = new JSONObject();
+			queryField.put(S3BatchConstants.FIELD_NAME,String.format(S3BatchConstants.QUERY_FIELD_SUID, applicationContext));
+			queryField.put(S3BatchConstants.FIELD_VALUE, Collections.singletonList(additionalData.getSuId()));
+			queryFieldsArray.put(queryField);
 			
 			//	Doc Type
-			queryField = new QueryFields(String.format(S3BatchConstants.QUERY_FIELD_DOC_TYPE, applicationContext), additionalData.getDocType());
-			queryFields.add(queryField);
+			queryField = new JSONObject();
+			queryField.put(S3BatchConstants.FIELD_NAME,String.format(S3BatchConstants.QUERY_FIELD_DOC_TYPE, applicationContext));
+			queryField.put(S3BatchConstants.FIELD_VALUE, additionalData.getDocType());
+			queryFieldsArray.put(queryField);
 			
-			//Final Query Fields list
-			subQuery.setQueryFields(queryFields);
-			additionalJson = new JSONObject(subQuery);
-			subQueries.put(additionalJson);
+			//	Append Sub query
+			subQueries.put(subQuery);
 			break;
 		default:
-			subQuery = SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build();
-			additionalJson = new JSONObject(subQuery);
-			JSONArray defaultFieldsArray = additionalJson.getJSONArray(S3BatchConstants.QUERY_FIELDS);
+			//	Sub query for all other doctypes
+			subQuery =  new JSONObject(SearchQueryBuilder.ofQueryType(QueryType.SIMPLE).build());
+			queryFieldsArray = subQuery.getJSONArray(S3BatchConstants.QUERY_FIELDS);
 			
 			//	Person-Id
-			JSONObject defaultFields = new JSONObject();
-			defaultFields.put(S3BatchConstants.FIELD_NAME, String.format(S3BatchConstants.QUERY_FIELD_PERSON_ID, applicationContext));
-			defaultFields.put(S3BatchConstants.FIELD_VALUE, "");
-			defaultFieldsArray.put(defaultFields);
+			queryField = new JSONObject();
+			queryField.put(S3BatchConstants.FIELD_NAME, String.format(S3BatchConstants.QUERY_FIELD_PERSON_ID, applicationContext));
+			queryField.put(S3BatchConstants.FIELD_VALUE, "");
+			queryFieldsArray.put(queryField);
 			
 			//	Su-Id
-			defaultFields = new JSONObject();
-			defaultFields.put(S3BatchConstants.FIELD_NAME, String.format(S3BatchConstants.QUERY_FIELD_SUID, applicationContext));
-			defaultFields.put(S3BatchConstants.FIELD_VALUE, "");
-			defaultFieldsArray.put(defaultFields);
+			queryField = new JSONObject();
+			queryField.put(S3BatchConstants.FIELD_NAME, String.format(S3BatchConstants.QUERY_FIELD_SUID, applicationContext));
+			queryField.put(S3BatchConstants.FIELD_VALUE, "");
+			queryFieldsArray.put(queryField);
 			
 			//	Doc Type
-			defaultFields = new JSONObject();
-			defaultFields.put(S3BatchConstants.FIELD_NAME, String.format(S3BatchConstants.QUERY_FIELD_DOC_TYPE, applicationContext));
-			defaultFields.put(S3BatchConstants.FIELD_VALUE, additionalData.getDocType());
-			defaultFieldsArray.put(defaultFields);
+			queryField = new JSONObject();
+			queryField.put(S3BatchConstants.FIELD_NAME, String.format(S3BatchConstants.QUERY_FIELD_DOC_TYPE, applicationContext));
+			queryField.put(S3BatchConstants.FIELD_VALUE, additionalData.getDocType());
+			queryFieldsArray.put(queryField);
 			
-			//Final Default Query Fields list
-			
-			subQueries.put(additionalJson);
+			//	Append Sub query			
+			subQueries.put(subQuery);
 			break;
 		}
-		return jsonBody.toString();
+		return requestJsonBody;
 	}
 
 	private String getCCSSearchUrl(String connectionUrl ,String applicationContext) {

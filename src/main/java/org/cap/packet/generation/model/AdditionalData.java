@@ -2,10 +2,10 @@ package org.cap.packet.generation.model;
 
 public class AdditionalData {
 	//Ids
-	private String auId;
-	private String suId;
-	private String compnbr;
-	private String personid;	//ABE_Id
+	private String auId = "";
+	private String suId = "";
+	private String compnbr = "";
+	private String personid = "";	//ABE_Id
 	
 	private String applicationName;
 	private String className;
